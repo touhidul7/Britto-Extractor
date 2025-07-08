@@ -82,6 +82,6 @@ Suppose you're researching schools in Rangpur:
 
 ## ⚠️ Disclaimer
 
-This tool is created for personal, educational, and productivity use.  
+This tool is created for personal, and productivity use.  
 It is **not affiliated with, endorsed by, or associated with Facebook** in any way.  
 Use it responsibly and ensure compliance with Facebook's terms of service and policies.
