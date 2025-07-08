@@ -42,20 +42,6 @@ Suppose you're researching schools in Rangpur:
 
 ---
 
-## 📁 Project Structure
-
-britto-extractor/
-│
-├── manifest.json # Extension manifest
-├── background.js # (If used) Background tasks
-├── content.js # Injected script for data extraction
-├── popup.html # UI for the extension popup
-├── popup.js # Logic for popup interactions
-├── style.css # Popup styling
-└── README.md # Documentation
-
----
-
 ## 🧠 How It Works
 
 - The extension scans the Facebook DOM for relevant data (names and links).
