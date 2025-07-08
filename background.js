@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       });
       return;
     }
-    // Get current operation and save extracted data to local storage under the operation (replace, not append)
+    // Get current operation and append extracted data to local storage under the operation
     chrome.storage.local.get(['currentOperation', 'operations'], (data) => {
       const op = data.currentOperation;
       if (!op || !(data.operations && Object.prototype.hasOwnProperty.call(data.operations, op))) {
@@ -31,12 +31,22 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         return;
       }
       const opDataKey = 'extractedData_' + op;
-      chrome.storage.local.set({ [opDataKey]: msg.pages }, () => {
-        // Always show completed if local save is successful
-        chrome.tabs.sendMessage(sender.tab.id, { type: 'notify', message: 'Extraction completed and saved locally!', success: true }, () => {
-          if (chrome.runtime.lastError) {
-            // The receiving end does not exist, ignore this error
+      chrome.storage.local.get([opDataKey], (d) => {
+        const oldPages = Array.isArray(d[opDataKey]) ? d[opDataKey] : [];
+        // Merge old and new, avoiding duplicates by link
+        const combined = [...oldPages];
+        msg.pages.forEach(newPage => {
+          if (!combined.some(p => p.link === newPage.link)) {
+            combined.push(newPage);
           }
+        });
+        chrome.storage.local.set({ [opDataKey]: combined }, () => {
+          // Always show completed if local save is successful
+          chrome.tabs.sendMessage(sender.tab.id, { type: 'notify', message: 'Extraction completed and saved locally!', success: true }, () => {
+            if (chrome.runtime.lastError) {
+              // The receiving end does not exist, ignore this error
+            }
+          });
         });
       });
     });
