@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Britto Extractor",
+  "version": "1.0",
+  "description": "Extract Facebook page names and links from search results and copy to MS Excel or Google Sheets.",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab",
+    "identity",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://www.facebook.com/*",
+    "https://docs.google.com/spreadsheets/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.facebook.com/*"],
+      "js": ["content.js", "content_script_notify.js"]
+    }
+  ],
+  "oauth2": {
+    "client_id": "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/spreadsheets"
+    ]
+  },
+  "options_page": "options.html"
+}

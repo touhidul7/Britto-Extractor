@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Britto Extractor</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        width: 300px;
+        margin: 10px;
+      }
+      input,
+      select,
+      button {
+        width: 100%;
+        margin: 5px 0;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+      .set-controller-btn {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      button {
+        cursor: pointer;
+      }
+      #loadDataBtnPopup {
+        background-color: #4caf50; /* Green */
+        color: white;
+        border: none;
+        padding: 5px;
+        border-radius: 2px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+      #resetDataBtnPopup {
+        background-color: #f44336; /* Red */
+        color: white;
+        border: none;
+        padding: 5px;
+        border-radius: 2px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+      input {
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      #copyDataBtnPopup{
+        background-color: #008CBA; /* Blue */
+        color: white;
+        border: none;
+        padding: 5px;
+        border-radius: 2px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+      #operationDataPopup {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      #operationSelectPopup {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      #operationList {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      #operationName {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+
+      #saveOperation {
+        background-color: #4CAF50; /* Green */
+        color: white;
+        border: none;
+        padding: 8px;
+        border-radius: 2px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+      #startExtract {
+        background-color: #008CBA; /* Blue */
+        color: white;
+        border: none;
+        padding: 8px;
+        border-radius: 2px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+      #openSettings {
+        background-color: black; /* Red */
+        color: white;
+        border: none;
+        padding: 8px;
+        border-radius: 2px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Britto Extractor</h2>
+
+    <div>
+      <label>Data Set Name</label>
+      <input
+        type="text"
+        id="operationName"
+        placeholder="Enter or select operation"
+      />
+      <button id="saveOperation">Create Data Set</button>
+    </div>
+
+    <div>
+      <select id="operationList"></select>
+      <button id="startExtract">Start Extract</button>
+    </div>
+
+    <div>
+      <button id="openSettings">All Data Set</button>
+      <div id="status"></div>
+    </div>
+
+    <div id="settingsPanel" style="display: none; margin-top: 10px">
+      <div>
+        <label for="operationSelectPopup">Select Data Set</label>
+        <select id="operationSelectPopup"></select>
+      </div>
+      <div class="set-controller-btn">
+        <button id="loadDataBtnPopup">Load Data</button>
+        <button id="resetDataBtnPopup">Reset Data</button>
+      </div>
+      <button id="copyDataBtnPopup">Copy Data</button>
+      <textarea
+        id="operationDataPopup"
+        rows="8"
+        style="width: 100%; margin-top: 5px"
+      ></textarea>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
