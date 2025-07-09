@@ -1,5 +1,3 @@
-// No API key input needed, set default API key automatically
-chrome.storage.local.set({ sheetsApiKey: 'AIzaSyCNd-Mi6NAQn-WvHjizKkPl6cXtUAiiiLc' });
 
 // --- Operation Data Viewer ---
 const opSelect = document.getElementById('operationSelect');
