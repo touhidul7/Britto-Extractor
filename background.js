@@ -57,7 +57,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (!op) return;
     const opDataKey = 'extractedData_' + op;
     chrome.storage.local.remove([opDataKey], () => {
-      // Optionally notify sender
+      // Notify all extension views (popups, options, etc.)
+      if (chrome.runtime && chrome.runtime.sendMessage) {
+        chrome.runtime.sendMessage({ type: 'notify', message: 'Extracted data reset for operation: ' + op, success: true });
+      }
+      // Optionally notify sender tab (for content script)
       if (sender && sender.tab && sender.tab.id) {
         chrome.tabs.sendMessage(sender.tab.id, { type: 'notify', message: 'Extracted data reset for operation: ' + op, success: true }, () => {
           if (chrome.runtime.lastError) {
