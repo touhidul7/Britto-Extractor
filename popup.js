@@ -90,6 +90,7 @@ resetDataBtnPopup.onclick = () => {
     const resetStatus = document.getElementById('resetStatusPopup');
     if (resetStatus) {
       resetStatus.textContent = 'Reset Succeed!';
+      statusDiv.textContent="";
       setTimeout(() => { resetStatus.textContent = ''; }, 2000);
     }
   });
