@@ -44,16 +44,38 @@ saveOperationBtn.onclick = () => {
     statusDiv.textContent = 'Operation saved!';
     statusDiv.className = 'success';
   });
+
+
 const resetDataBtnPopup = document.getElementById('resetDataBtnPopup');
+
 resetDataBtnPopup.onclick = () => {
   const op = opSelectPopup.value;
   if (!op) return;
-  const opDataKey = 'extractedData_' + op;
-  chrome.storage.local.remove([opDataKey], () => {
+  if (!window.confirm('Are you sure you want to reset all extracted data for this data set? This cannot be undone.')) return;
+  chrome.runtime.sendMessage({ type: 'resetExtractedData', operationName: op }, () => {
+    // After reset, clear the textarea and show a status message
     opDataAreaPopup.value = '';
-    alert('Extracted data reset for operation: ' + op);
+    const statusDiv = document.getElementById('status');
+    if (statusDiv) {
+      statusDiv.textContent = 'Extracted data reset for operation: ' + op;
+      statusDiv.className = 'success';
+    }
   });
 };
+
+// Listen for reset notification from background and update UI
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.type === 'notify' && msg.success && msg.message && msg.message.startsWith('Extracted data reset for operation:')) {
+    if (typeof opDataAreaPopup !== 'undefined' && opDataAreaPopup) {
+      opDataAreaPopup.value = '';
+    }
+    const statusDiv = document.getElementById('status');
+    if (statusDiv) {
+      statusDiv.textContent = msg.message;
+      statusDiv.className = 'success';
+    }
+  }
+});
 };
 
 

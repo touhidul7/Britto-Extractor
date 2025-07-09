@@ -18,6 +18,7 @@ chrome.storage.local.get(['operations'], (data) => {
   }
 });
 
+
 // Load data for selected operation
 loadDataBtn.onclick = () => {
   const op = opSelect.value;
@@ -45,5 +46,20 @@ downloadDataBtn.onclick = () => {
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+  });
+};
+
+// --- Reset Data for Operation (NEW) ---
+const resetDataBtn = document.createElement('button');
+resetDataBtn.textContent = 'Reset Data';
+resetDataBtn.style.marginLeft = '10px';
+opSelect.parentNode.insertBefore(resetDataBtn, loadDataBtn.nextSibling);
+
+resetDataBtn.onclick = () => {
+  const op = opSelect.value;
+  if (!op) return;
+  chrome.runtime.sendMessage({ type: 'resetExtractedData', operationName: op }, () => {
+    opDataArea.value = '';
+    alert('Extracted data reset for operation: ' + op);
   });
 };
