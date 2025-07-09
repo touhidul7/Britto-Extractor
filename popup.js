@@ -156,6 +156,8 @@ document.addEventListener('DOMContentLoaded', loadOperations);
 // Listen for status updates from background/content script
 chrome.runtime.onMessage.addListener((msg) => {
   console.log('FB Extractor popup received message:', msg);
+  statusDiv.style.color = 'green';
+  statusDiv.textContent = 'Data Extracted Successfully!';
   if (msg.type === 'updatePopup' || msg.type === 'popupStatus') {
     statusDiv.textContent = msg.message;
     statusDiv.className = msg.success ? 'success' : 'error';

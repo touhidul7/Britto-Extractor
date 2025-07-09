@@ -10,7 +10,7 @@
       const name = a.textContent.trim();
       // Log all links for debugging
       if (name && href) {
-        console.log('FB Extractor found link:', name, href);
+        // console.log('FB Extractor found link:', name, href);
       }
       // Permissive: collect all facebook.com links with visible text
       if (name && href && !results.some(r => r.link === href)) {
@@ -22,7 +22,7 @@
 
   try {
     const pages = extractPages();
-    console.log('FB Extractor extracted pages:', pages);
+    // console.log('FB Extractor extracted pages:', pages);
     if (!pages.length) {
       chrome.runtime.sendMessage({ type: 'extractResult', success: false, message: 'No pages found. Try scrolling or changing search.' });
       return;

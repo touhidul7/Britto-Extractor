@@ -1,19 +1,23 @@
+
 # Britto Extractor
 
 **Britto Extractor** is a powerful and lightweight browser extension for extracting data from Facebook. It helps users collect Facebook **profiles**, **groups**, and **pages** — including their names and links — directly from the **news feed** or **search results**. Ideal for marketers, researchers, or anyone doing targeted data collection on Facebook.
 
 ---
 
+
 ## 🚀 Features
 
 - 🔍 Extract **Profiles**, **Groups**, and **Pages** from Facebook search results or feed.
 - 📂 Create and manage multiple **Data Sets**.
-- ♻️ Save multiple search results under a single data set.
-- 📋 Copy all extracted results easily.
-- 🔁 Reset a specific data set when needed.
+- ♻️ Append multiple search results to a single data set (no duplicates).
+- 📋 Copy all extracted results easily (with instant feedback).
+- 🔁 Instantly reset a specific data set (with success message and table reload).
 - 🧠 Persistent storage using local browser storage (no account or server required).
+- 🖥️ Modern, tabbed popup UI with table view for easy browsing and copying.
+- 🔗 **Download as CSV:** In the **Data Set** tab, click the link button to go to a page where you can download your data as a CSV file.
 
----
+
 
 ## 📌 Example Use Case
 
@@ -22,9 +26,14 @@ Suppose you're researching schools in Rangpur:
 1. Create a data set named `Rangpur Schools` in the extension.
 2. Search for schools on Facebook.
 3. Select the data set `Rangpur Schools` and click **Extract**.
-4. Repeat the search and extraction process as needed.
-5. Open **All Data Sets** to view or copy all collected data.
-6. You can also reset the data set if you want to start fresh.
+4. Repeat the search and extraction process as needed (all results are appended, no duplicates).
+
+5. Open the **Data Set** tab in the popup to view all collected data as a table.
+
+6. Use the **Copy Data** button for instant clipboard copy (with success message).
+7. Use **Reset Data** to instantly clear the data set (with success message and table reload).
+8. Click the **link** button in the Data Set tab to be redirected to a page where you can download your data as a CSV file.
+8. Click the **CSV link button** in the Data Set tab to go to a page where you can download your data as a CSV file.
 
 ---
 
