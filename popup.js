@@ -5,6 +5,34 @@ const operationList = document.getElementById('operationList');
 const startExtractBtn = document.getElementById('startExtract');
 const statusDiv = document.getElementById('status');
 
+// Tab logic
+const operationTab = document.getElementById('operationTab');
+const dataSetTab = document.getElementById('dataSetTab');
+const searchContainer = document.querySelector('.search-container');
+const dataContainer = document.querySelector('.data-container');
+
+function showTab(tab) {
+  if (tab === 'operation') {
+    operationTab.classList.add('active');
+    dataSetTab.classList.remove('active');
+    searchContainer.style.display = '';
+    dataContainer.style.display = 'none';
+  } else {
+    operationTab.classList.remove('active');
+    dataSetTab.classList.add('active');
+    searchContainer.style.display = 'none';
+    dataContainer.style.display = '';
+  }
+}
+
+operationTab.onclick = () => showTab('operation');
+dataSetTab.onclick = () => showTab('data');
+
+// Set initial tab
+document.addEventListener('DOMContentLoaded', () => {
+  showTab('operation');
+});
+
 // Load saved operations
 function loadOperations() {
   chrome.storage.local.get(['operations', 'currentOperation'], (data) => {
@@ -46,36 +74,48 @@ saveOperationBtn.onclick = () => {
   });
 
 
-const resetDataBtnPopup = document.getElementById('resetDataBtnPopup');
 
+const resetDataBtnPopup = document.getElementById('resetDataBtnPopup');
 resetDataBtnPopup.onclick = () => {
   const op = opSelectPopup.value;
   if (!op) return;
   if (!window.confirm('Are you sure you want to reset all extracted data for this data set? This cannot be undone.')) return;
   chrome.runtime.sendMessage({ type: 'resetExtractedData', operationName: op }, () => {
-    // After reset, clear the textarea and show a status message
-    opDataAreaPopup.value = '';
-    const statusDiv = document.getElementById('status');
-    if (statusDiv) {
-      statusDiv.textContent = 'Extracted data reset for operation: ' + op;
-      statusDiv.className = 'success';
+    // Fallback: clear table and show message even if background doesn't respond
+    let tableDiv = document.getElementById('operationDataTablePopup');
+    if (tableDiv) tableDiv.innerHTML = '<table><thead><tr><th>Name</th><th>Link</th></tr></thead><tbody></tbody></table>';
+    if (typeof opDataAreaPopup !== 'undefined' && opDataAreaPopup) {
+      opDataAreaPopup.value = '';
+    }
+    const resetStatus = document.getElementById('resetStatusPopup');
+    if (resetStatus) {
+      resetStatus.textContent = 'Reset Succeed!';
+      setTimeout(() => { resetStatus.textContent = ''; }, 2000);
     }
   });
 };
 
-// Listen for reset notification from background and update UI
+// Listen for reset notification from background and update UI (single handler)
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'notify' && msg.success && msg.message && msg.message.startsWith('Extracted data reset for operation:')) {
+    // Clear table and textarea instantly, show message below button
+    let tableDiv = document.getElementById('operationDataTablePopup');
+    if (tableDiv) tableDiv.innerHTML = '<table><thead><tr><th>Name</th><th>Link</th></tr></thead><tbody></tbody></table>';
     if (typeof opDataAreaPopup !== 'undefined' && opDataAreaPopup) {
       opDataAreaPopup.value = '';
     }
-    const statusDiv = document.getElementById('status');
-    if (statusDiv) {
-      statusDiv.textContent = msg.message;
-      statusDiv.className = 'success';
-    }
+    // Show message below reset button
+    setTimeout(() => {
+      const resetStatus = document.getElementById('resetStatusPopup');
+      if (resetStatus) {
+        resetStatus.textContent = 'Reset Succeed!';
+        setTimeout(() => { resetStatus.textContent = ''; }, 2000);
+      }
+    }, 0);
   }
 });
+
+
 };
 
 
@@ -126,17 +166,20 @@ chrome.runtime.onMessage.addListener((msg) => {
   }
 });
 
-// --- Settings Panel for Copying Data ---
-const openSettingsBtn = document.getElementById('openSettings');
+// --- Data Set Tab Logic ---
 const settingsPanel = document.getElementById('settingsPanel');
 const opSelectPopup = document.getElementById('operationSelectPopup');
 const loadDataBtnPopup = document.getElementById('loadDataBtnPopup');
 const copyDataBtnPopup = document.getElementById('copyDataBtnPopup');
-const opDataAreaPopup = document.getElementById('operationDataPopup');
+let opDataAreaPopup = document.getElementById('operationDataPopup');
+if (!opDataAreaPopup) {
+  opDataAreaPopup = document.createElement('textarea');
+  opDataAreaPopup.id = 'operationDataPopup';
+  opDataAreaPopup.style.display = 'none';
+  settingsPanel.appendChild(opDataAreaPopup);
+}
 
-openSettingsBtn.onclick = () => {
-  settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
-  // Populate operation select
+function populateDataSetSelect() {
   opSelectPopup.innerHTML = '';
   chrome.storage.local.get(['operations'], (data) => {
     const ops = data.operations || {};
@@ -147,7 +190,16 @@ openSettingsBtn.onclick = () => {
       opSelectPopup.appendChild(opt);
     }
   });
+}
+
+// Populate on tab switch
+dataSetTab.onclick = () => {
+  showTab('data');
+  populateDataSetSelect();
 };
+
+// Also populate on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', populateDataSetSelect);
 
 loadDataBtnPopup.onclick = () => {
   const op = opSelectPopup.value;
@@ -155,11 +207,36 @@ loadDataBtnPopup.onclick = () => {
   const opDataKey = 'extractedData_' + op;
   chrome.storage.local.get([opDataKey], (d) => {
     const arr = d[opDataKey] || [];
+    // Show as table
+    let html = '<table><thead><tr><th>Name</th><th>Link</th></tr></thead><tbody>';
+    arr.forEach(row => {
+      html += `<tr><td title="${row.name ? row.name.replace(/"/g,'&quot;') : ''}">${row.name ? row.name.replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''}</td><td title="${row.link}"><a href="${row.link}" target="_blank">${row.link}</a></td></tr>`;
+    });
+    html += '</tbody></table>';
+    let tableDiv = document.getElementById('operationDataTablePopup');
+    if (tableDiv) tableDiv.innerHTML = html;
+    // For copy button, also update textarea (hidden)
     opDataAreaPopup.value = arr.map(row => `${row.name}\t${row.link}`).join('\n');
   });
 };
 
 copyDataBtnPopup.onclick = () => {
-  opDataAreaPopup.select();
-  document.execCommand('copy');
+  // Always update the textarea with the latest table data
+  const op = opSelectPopup.value;
+  if (!op) return;
+  const opDataKey = 'extractedData_' + op;
+  chrome.storage.local.get([opDataKey], (d) => {
+    const arr = d[opDataKey] || [];
+    opDataAreaPopup.value = arr.map(row => `${row.name}\t${row.link}`).join('\n');
+    opDataAreaPopup.style.display = 'block';
+    opDataAreaPopup.select();
+    document.execCommand('copy');
+    opDataAreaPopup.style.display = 'none';
+    // Show copy success message
+    const copyStatus = document.getElementById('copyStatusPopup');
+    if (copyStatus) {
+      copyStatus.textContent = 'Copy Successfully!';
+      setTimeout(() => { copyStatus.textContent = ''; }, 2000);
+    }
+  });
 };
